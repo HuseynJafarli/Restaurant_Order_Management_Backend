@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "restaurant_tables")
 public class RestaurantTable {
 
     @Id
