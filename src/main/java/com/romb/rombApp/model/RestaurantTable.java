@@ -14,7 +14,7 @@ import java.util.List;
 public class RestaurantTable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private Long id;
 
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL)

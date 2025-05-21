@@ -1,7 +1,6 @@
 package com.romb.rombApp.service.Interfaces;
 
 import com.romb.rombApp.dto.RestaurantTableDTO;
-import com.romb.rombApp.model.RestaurantTable;
 
 import java.util.List;
 

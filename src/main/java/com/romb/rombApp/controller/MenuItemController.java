@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +35,6 @@ public class MenuItemController {
     public ResponseEntity<?> getMenuItemsByCategory(@PathVariable String categoryName) {
         MenuCategory category;
 
-        // Convert the string to enum and handle invalid input
         try {
             category = MenuCategory.valueOf(categoryName.toUpperCase());
         } catch (IllegalArgumentException e) {
