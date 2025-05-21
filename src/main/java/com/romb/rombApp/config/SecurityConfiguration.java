@@ -31,7 +31,7 @@ public class SecurityConfiguration {
                         .requestMatchers("api/orders/**").hasAnyRole("MANAGER", "KITCHEN", "WAITER")
                         .requestMatchers("/api/menu-items/**").permitAll()
                         .requestMatchers("/api/tables/**").hasAnyRole("MANAGER", "KITCHEN", "WAITER")
-                        .requestMatchers("/api/auth**").permitAll())
+                        .requestMatchers("/api/auth/**").permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -2,7 +2,7 @@ package com.romb.rombApp.model;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
+
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,9 +18,8 @@ import lombok.*;
 @Builder
 public class Staff implements UserDetails{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String fullName;
     private String username;
     private String password;
@@ -28,7 +27,8 @@ public class Staff implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Override
+
+  @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
