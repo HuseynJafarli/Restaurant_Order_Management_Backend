@@ -1,7 +1,5 @@
 package com.romb.rombApp.model;
 
-
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,5 +20,4 @@ public class Staff {
     @Enumerated(EnumType.STRING)
     private Role role;
 }
-
 

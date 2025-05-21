@@ -20,7 +20,3 @@ public class RestaurantTable {
     @OneToMany(mappedBy = "table", cascade = CascadeType.ALL)
     private List<Order> orders;
 }
-
-
-
-
