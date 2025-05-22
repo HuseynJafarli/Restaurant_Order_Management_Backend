@@ -1,6 +1,7 @@
 package com.romb.rombApp.service.Implementations;
 
 import com.romb.rombApp.dto.RestaurantTableDTO;
+import com.romb.rombApp.dto.RestaurantTableGetDTO;
 import com.romb.rombApp.model.RestaurantTable;
 import com.romb.rombApp.repository.RestaurantTableRepository;
 import com.romb.rombApp.service.Interfaces.RestaurantTableService;
@@ -20,29 +21,48 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     // Helper mapper methods
     private RestaurantTableDTO toDTO(RestaurantTable table) {
         RestaurantTableDTO dto = new RestaurantTableDTO();
-        dto.setId(table.getId());
+        dto.setTableUrl(table.getTableUrl());
         return dto;
     }
 
     private RestaurantTable fromDTO(RestaurantTableDTO dto) {
         RestaurantTable table = new RestaurantTable();
-        table.setId(dto.getId());
+        table.setTableUrl(dto.getTableUrl());
         return table;
     }
 
+    private RestaurantTableGetDTO toResponseDTO(RestaurantTable table) {
+        RestaurantTableGetDTO dto = new RestaurantTableGetDTO();
+        dto.setTableUrl(table.getTableUrl());
+        dto.setId(table.getId());
+        return dto;
+    }
+
+
+    
+
     @Override
-    public List<RestaurantTableDTO> getAll() {
+    public List<RestaurantTableGetDTO> getAll() {
         return repository.findAll().stream()
-                .map(this::toDTO)
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public RestaurantTableDTO getById(Long id) {
+    public RestaurantTableGetDTO getById(Long id) {
         RestaurantTable table = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Table not found with ID: " + id));
-        return toDTO(table);
+        return toResponseDTO(table);
     }
+
+    @Override
+    public RestaurantTableGetDTO getByTableUrl(String tableUrl) {
+        RestaurantTable table = repository.findByTableUrl(tableUrl)
+                .orElseThrow(() -> new EntityNotFoundException("Table not found with url: " + tableUrl));
+        return toResponseDTO(table);
+    }
+
+
 
     @Override
     public RestaurantTableDTO create(RestaurantTableDTO dto) {

@@ -101,8 +101,6 @@ public class OrderServiceImpl implements OrderService {
                     return OrderItemDetailsDTO.builder()
                             .menuItemName(menuItem.getName())
                             .quantity(item.getQuantity())
-                            .itemPrice(menuItem.getPrice())
-                            .subtotal(subtotal)
                             .build();
                 }).collect(Collectors.toList()))
                 .build();

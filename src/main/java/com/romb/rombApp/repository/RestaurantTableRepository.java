@@ -10,4 +10,6 @@ import com.romb.rombApp.model.RestaurantTable;
 @Repository
 public interface RestaurantTableRepository extends JpaRepository<RestaurantTable, Long> {
     Optional<RestaurantTable> findById(Long id);
+    Optional<RestaurantTable> findByTableUrl(String tableUrl);
+
 }

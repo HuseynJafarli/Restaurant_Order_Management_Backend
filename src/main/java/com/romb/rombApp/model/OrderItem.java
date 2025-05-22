@@ -1,6 +1,6 @@
 package com.romb.rombApp.model;
 
-import java.math.BigDecimal;
+
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,5 +23,4 @@ public class OrderItem {
     private MenuItem menuItem;
 
     private int quantity;
-    private BigDecimal price;
 }

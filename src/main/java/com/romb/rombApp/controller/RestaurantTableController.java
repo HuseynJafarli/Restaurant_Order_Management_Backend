@@ -1,6 +1,7 @@
 package com.romb.rombApp.controller;
 
 import com.romb.rombApp.dto.RestaurantTableDTO;
+import com.romb.rombApp.dto.RestaurantTableGetDTO;
 import com.romb.rombApp.service.Interfaces.RestaurantTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,18 @@ public class RestaurantTableController {
     private RestaurantTableService tableService;
 
     @GetMapping
-    public List<RestaurantTableDTO> getAllTables() {
+    public List<RestaurantTableGetDTO> getAllTables() {
         return tableService.getAll();
     }
 
-    @GetMapping("/{id}")
-    public RestaurantTableDTO getTableById(@PathVariable Long id) {
-        return tableService.getById(id);
+    // @GetMapping("/{id}")
+    // public RestaurantTableGetDTO getTableById(@PathVariable Long id) {
+    //     return tableService.getById(id);
+    // }
+
+    @GetMapping("/{tableUrl}")
+    public RestaurantTableGetDTO getTableByTableUrl(@PathVariable String tableUrl) {
+        return tableService.getByTableUrl(tableUrl);
     }
 
     @PostMapping

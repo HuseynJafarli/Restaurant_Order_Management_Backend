@@ -10,6 +10,5 @@ import java.math.BigDecimal;
 public class OrderItemDetailsDTO {
     private String menuItemName;
     private int quantity;
-    private BigDecimal itemPrice;
-    private BigDecimal subtotal;
+
 }

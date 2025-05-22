@@ -23,7 +23,7 @@ public class JwtService{
     private String secretKey;
 
     
-    private static final long jwtExpiration = 1000 * 60 * 24;
+    private static final long jwtExpiration = 1000 * 60 * 60 * 24;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,6 +39,7 @@ public class JwtService{
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        extraClaims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
@@ -84,7 +85,7 @@ public class JwtService{
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = secretKey.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
