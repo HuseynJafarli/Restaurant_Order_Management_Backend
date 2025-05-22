@@ -31,6 +31,7 @@ class RestaurantTableServiceImplTest {
 
     private RestaurantTable table;
     private RestaurantTableDTO tableDTO;
+    private RestaurantTableGetDTO tableGetDTO;
 
     @BeforeEach
     void setup() {
@@ -40,6 +41,7 @@ class RestaurantTableServiceImplTest {
                 .build();
 
         tableDTO = new RestaurantTableDTO();
+        tableGetDTO = new RestaurantTableGetDTO();
         tableDTO.setTableUrl("table-101");
     }
 
@@ -102,7 +104,7 @@ class RestaurantTableServiceImplTest {
         when(repository.findById(1L)).thenReturn(Optional.of(table));
         when(repository.save(any(RestaurantTable.class))).thenReturn(table);
 
-        RestaurantTableDTO result = service.update(1L, tableDTO);
+        RestaurantTableGetDTO result = service.update(1L, tableGetDTO);
 
         assertEquals(table.getTableUrl(), result.getTableUrl());
     }
@@ -111,7 +113,7 @@ class RestaurantTableServiceImplTest {
     void update_InvalidId_ShouldThrowException() {
         when(repository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> service.update(99L, tableDTO));
+        assertThrows(ResourceNotFoundException.class, () -> service.update(99L, tableGetDTO));
     }
 
     @Test
