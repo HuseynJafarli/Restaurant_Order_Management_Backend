@@ -30,7 +30,7 @@ public class SecurityConfiguration {
         .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/orders").permitAll()
-                        .requestMatchers("/api/orders/**").hasAnyAuthority("MANAGER", "KITCHEN", "WAITER")
+                        .requestMatchers("/api/orders/**").permitAll()
                         .requestMatchers("/api/menu-items/**").permitAll()
                         .requestMatchers("/api/tables").hasAnyAuthority("MANAGER", "KITCHEN", "WAITER")
                         .requestMatchers("/api/tables/**").permitAll()
