@@ -10,11 +10,13 @@ import com.romb.rombApp.repository.OrderRepository;
 import com.romb.rombApp.repository.RestaurantTableRepository;
 import com.romb.rombApp.service.Interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +34,13 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMessageProducer orderMessageProducer;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    private String getOrderStatusKey(Long orderId) {
+        return "order_status:" + orderId;
+    }
+
     @Override
     public List<Order> getAll() {
         List<Order> orders = orderRepository.findAll();
@@ -43,20 +52,43 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getById(Long id) {
-        return orderRepository.findById(id)
+        String key = getOrderStatusKey(id);
+        String cachedStatus = (String) redisTemplate.opsForValue().get(key);
+
+        if (cachedStatus != null) {
+            // Return order with cached status
+            Order order = new Order();
+            order.setId(id);
+            order.setStatus(OrderStatus.valueOf(cachedStatus));
+            return order;
+        }
+
+        Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+        // Cache the status for future requests (e.g., 5 minutes)
+        redisTemplate.opsForValue().set(key, order.getStatus().toString(), 5, TimeUnit.MINUTES);
+
+        return order;
     }
 
     @Override
     public Order create(Order order) {
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        redisTemplate.opsForValue().set(getOrderStatusKey(savedOrder.getId()), savedOrder.getStatus().toString(), 5, TimeUnit.MINUTES);
+        return savedOrder;
     }
 
     @Override
     public Order update(Long id, Order updatedOrder) {
         Order existing = getById(id);
         existing.setStatus(updatedOrder.getStatus());
-        return orderRepository.save(existing);
+        Order saved = orderRepository.save(existing);
+
+        // Update status in Redis
+        redisTemplate.opsForValue().set(getOrderStatusKey(id), saved.getStatus().toString(), 5, TimeUnit.MINUTES);
+
+        return saved;
     }
 
     @Override
@@ -65,6 +97,9 @@ public class OrderServiceImpl implements OrderService {
             throw new ResourceNotFoundException("Order not found with ID: " + id);
         }
         orderRepository.deleteById(id);
+
+        // Remove from Redis as well
+        redisTemplate.delete(getOrderStatusKey(id));
     }
 
     public Order createFromDTO(OrderRequestDTO dto) {
@@ -96,6 +131,9 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(total);
 
         Order savedOrder = orderRepository.save(order);
+
+        // Cache order status
+        redisTemplate.opsForValue().set(getOrderStatusKey(savedOrder.getId()), savedOrder.getStatus().toString(), 5, TimeUnit.MINUTES);
 
         // Send message to RabbitMQ
         orderMessageProducer.sendOrderCreatedMessage(savedOrder);
