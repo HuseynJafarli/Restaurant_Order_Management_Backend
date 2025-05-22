@@ -4,6 +4,7 @@ package com.romb.rombApp.controller;
 import com.romb.rombApp.dto.AuthRequest;
 import com.romb.rombApp.dto.AuthResponse;
 import com.romb.rombApp.dto.RegisterRequest;
+import com.romb.rombApp.exception.InvalidCredentialsException;
 import com.romb.rombApp.model.Staff;
 import com.romb.rombApp.service.AuthenticationService;
 import com.romb.rombApp.service.JwtService;
@@ -31,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest authRequest) throws InvalidCredentialsException {
         Staff staff = authenticationService.authenticate(authRequest);
 
         String jwtToken = jwtService.generateToken(staff);

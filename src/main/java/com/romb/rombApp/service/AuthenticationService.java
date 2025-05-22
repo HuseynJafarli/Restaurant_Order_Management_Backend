@@ -2,6 +2,7 @@ package com.romb.rombApp.service;
 
 import com.romb.rombApp.dto.AuthRequest;
 import com.romb.rombApp.dto.RegisterRequest;
+import com.romb.rombApp.exception.InvalidCredentialsException;
 import com.romb.rombApp.model.Staff;
 import com.romb.rombApp.repository.StaffRepository;
 
@@ -42,6 +43,6 @@ public class AuthenticationService {
         );
 
         return staffRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
     }
 }

@@ -2,10 +2,10 @@ package com.romb.rombApp.service.Implementations;
 
 import com.romb.rombApp.dto.RestaurantTableDTO;
 import com.romb.rombApp.dto.RestaurantTableGetDTO;
+import com.romb.rombApp.exception.ResourceNotFoundException;
 import com.romb.rombApp.model.RestaurantTable;
 import com.romb.rombApp.repository.RestaurantTableRepository;
 import com.romb.rombApp.service.Interfaces.RestaurantTableService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,6 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     @Autowired
     private RestaurantTableRepository repository;
 
-    // Helper mapper methods
     private RestaurantTableDTO toDTO(RestaurantTable table) {
         RestaurantTableDTO dto = new RestaurantTableDTO();
         dto.setTableUrl(table.getTableUrl());
@@ -51,14 +50,14 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     @Override
     public RestaurantTableGetDTO getById(Long id) {
         RestaurantTable table = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Table not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Table not found with ID: " + id));
         return toResponseDTO(table);
     }
 
     @Override
     public RestaurantTableGetDTO getByTableUrl(String tableUrl) {
         RestaurantTable table = repository.findByTableUrl(tableUrl)
-                .orElseThrow(() -> new EntityNotFoundException("Table not found with url: " + tableUrl));
+                .orElseThrow(() -> new ResourceNotFoundException("Table not found with url: " + tableUrl));
         return toResponseDTO(table);
     }
 
@@ -74,7 +73,7 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     @Override
     public RestaurantTableDTO update(Long id, RestaurantTableDTO dto) {
         RestaurantTable existing = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Table not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Table not found with ID: " + id));
         // No additional fields to update, just save existing entity for now
         RestaurantTable updated = repository.save(existing);
         return toDTO(updated);
@@ -83,7 +82,7 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     @Override
     public void delete(Long id) {
         if (!repository.existsById(id)) {
-            throw new EntityNotFoundException("Table not found with ID: " + id);
+            throw new ResourceNotFoundException("Table not found with ID: " + id);
         }
         repository.deleteById(id);
     }

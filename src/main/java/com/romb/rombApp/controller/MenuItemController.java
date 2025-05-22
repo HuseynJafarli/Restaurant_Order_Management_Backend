@@ -1,14 +1,14 @@
 package com.romb.rombApp.controller;
 
 
+import com.romb.rombApp.exception.BadRequestException;
+import com.romb.rombApp.exception.ResourceNotFoundException;
 import com.romb.rombApp.model.MenuCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import org.springframework.web.bind.annotation.RestController;
 
 import com.romb.rombApp.model.MenuItem;
 import com.romb.rombApp.service.Interfaces.MenuItemService;
@@ -35,21 +35,20 @@ public class MenuItemController {
     public ResponseEntity<?> getMenuItemsByCategory(@PathVariable String categoryName) {
         MenuCategory category;
 
-        try {
-            category = MenuCategory.valueOf(categoryName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(
-                    "Invalid category: " + categoryName +
-                            ". Allowed values: APPETIZER, MAIN_COURSE, DESSERT, DRINK"
-            );
-        }
+    try {
+        category = MenuCategory.valueOf(categoryName.toUpperCase());
+    } catch (Exception e) {
+        throw new BadRequestException("Invalid category: " + categoryName +
+                ". Allowed values: APPETIZER, MAIN_COURSE, DESSERT, DRINK");
+    }
 
-        List<MenuItem> items = menuItemService.findByCategory(category);
-        if (items.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+    List<MenuItem> items = menuItemService.findByCategory(category);
 
-        return ResponseEntity.ok(items);
+    if (items.isEmpty()) {
+        throw new ResourceNotFoundException("No menu items found for category: " + categoryName);
+    }
+
+    return ResponseEntity.ok(items);
     }
 
     @GetMapping("/{id}")
