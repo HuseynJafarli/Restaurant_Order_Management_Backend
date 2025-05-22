@@ -12,9 +12,6 @@ import com.romb.rombApp.service.Implementations.OrderServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -38,16 +35,9 @@ public class OrderServiceImplTest {
     @Mock
     private OrderMessageProducer orderMessageProducer;
 
-    @Mock
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Mock
-    private ValueOperations<String, Object> valueOperations;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     }
 
     @Test
@@ -57,7 +47,6 @@ public class OrderServiceImplTest {
         order.setId(orderId);
         order.setStatus(OrderStatus.NEW);
 
-        when(redisTemplate.opsForValue().get("order_status:" + orderId)).thenReturn(null);
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
 
         Order result = orderService.getById(orderId);
@@ -71,7 +60,6 @@ public class OrderServiceImplTest {
     public void testGetById_WhenOrderNotFound_ThrowsException() {
         Long orderId = 999L;
 
-        when(redisTemplate.opsForValue().get("order_status:" + orderId)).thenReturn(null);
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> orderService.getById(orderId));
@@ -100,9 +88,8 @@ public class OrderServiceImplTest {
         existingOrder.setStatus(OrderStatus.NEW);
 
         Order updatedOrder = new Order();
-        updatedOrder.setStatus(OrderStatus.READY); // updated to use valid enum
+        updatedOrder.setStatus(OrderStatus.READY);
 
-        when(redisTemplate.opsForValue().get("order_status:" + orderId)).thenReturn(null);
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
         when(orderRepository.save(existingOrder)).thenReturn(existingOrder);
 
@@ -118,7 +105,6 @@ public class OrderServiceImplTest {
         Order updatedOrder = new Order();
         updatedOrder.setStatus(OrderStatus.DELIVERED);
 
-        when(redisTemplate.opsForValue().get("order_status:" + orderId)).thenReturn(null);
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> orderService.update(orderId, updatedOrder));
@@ -130,12 +116,10 @@ public class OrderServiceImplTest {
 
         when(orderRepository.existsById(orderId)).thenReturn(true);
         doNothing().when(orderRepository).deleteById(orderId);
-        when(redisTemplate.delete("order_status:" + orderId)).thenReturn(true); // Fix here
 
         assertDoesNotThrow(() -> orderService.delete(orderId));
 
         verify(orderRepository).deleteById(orderId);
-        verify(redisTemplate).delete("order_status:" + orderId);
     }
 
     @Test
@@ -159,7 +143,6 @@ public class OrderServiceImplTest {
         when(tableRepository.findById(1L)).thenReturn(Optional.of(table));
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(menuItem));
 
-        // Fix: manually assign menuItem to OrderItem in mock response
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
             Order o = invocation.getArgument(0);
             o.getItems().forEach(i -> i.setMenuItem(menuItem));

@@ -25,7 +25,7 @@ public class OrderMessageProducer {
         dto.setTableId(order.getTable().getId());
         dto.setStatus(order.getStatus());
         dto.setTotalAmount(order.getTotalAmount());
-        dto.setCreatedAt(order.getCreatedAt());
+        // dto.setCreatedAt(order.getCreatedAt());
 
         dto.setItems(order.getItems().stream().map(item -> {
             OrderItemMessageDTO itemDTO = new OrderItemMessageDTO();
