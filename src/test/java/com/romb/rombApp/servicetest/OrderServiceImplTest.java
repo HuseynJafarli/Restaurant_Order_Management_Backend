@@ -4,6 +4,7 @@ import com.romb.rombApp.dto.OrderItemDTO;
 import com.romb.rombApp.dto.OrderRequestDTO;
 import com.romb.rombApp.exception.NoContentException;
 import com.romb.rombApp.exception.ResourceNotFoundException;
+import com.romb.rombApp.messaging.producer.OrderMessageProducer;
 import com.romb.rombApp.model.*;
 import com.romb.rombApp.repository.MenuItemRepository;
 import com.romb.rombApp.repository.OrderRepository;
@@ -38,6 +39,9 @@ public class OrderServiceImplTest {
 
     @InjectMocks
     private OrderServiceImpl orderService;
+
+    @Mock
+    private OrderMessageProducer orderMessageProducer;
 
     private Order mockOrder;
     private RestaurantTable mockTable;
