@@ -142,19 +142,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderResponseDTO convertToResponseDTO(Order order) {
-        return OrderResponseDTO.builder()
-                .orderId(order.getId())
-                .tableId(order.getTable().getId())
-                .status(order.getStatus())
-                .totalAmount(order.getTotalAmount())
-                .createdAt(order.getCreatedAt())
-                .items(order.getItems().stream().map(item -> {
-                    MenuItem menuItem = item.getMenuItem();
-                    return OrderItemDetailsDTO.builder()
-                            .menuItemName(menuItem.getName())
-                            .quantity(item.getQuantity())
-                            .build();
-                }).collect(Collectors.toList()))
-                .build();
-    }
+    Long tableId = order.getTable() != null ? order.getTable().getId() : null;
+
+    return OrderResponseDTO.builder()
+            .orderId(order.getId())
+            .tableId(tableId)
+            .status(order.getStatus())
+            .totalAmount(order.getTotalAmount())
+            .createdAt(order.getCreatedAt())
+            .items(order.getItems().stream().map(item -> {
+                MenuItem menuItem = item.getMenuItem();
+                return OrderItemDetailsDTO.builder()
+                        .menuItemName(menuItem.getName())
+                        .quantity(item.getQuantity())
+                        .build();
+            }).collect(Collectors.toList()))
+            .build();
+}
+
 }
