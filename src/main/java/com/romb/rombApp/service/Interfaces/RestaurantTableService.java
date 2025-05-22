@@ -10,6 +10,6 @@ public interface RestaurantTableService {
     RestaurantTableGetDTO getById(Long id);
     RestaurantTableGetDTO getByTableUrl(String tableUrl);
     RestaurantTableDTO create(RestaurantTableDTO dto);
-    RestaurantTableDTO update(Long id, RestaurantTableDTO dto);
+    RestaurantTableGetDTO update(Long id, RestaurantTableGetDTO dto);
     void delete(Long id);
 }

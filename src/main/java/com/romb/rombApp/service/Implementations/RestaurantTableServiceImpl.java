@@ -71,12 +71,12 @@ public class RestaurantTableServiceImpl implements RestaurantTableService {
     }
 
     @Override
-    public RestaurantTableDTO update(Long id, RestaurantTableDTO dto) {
+    public RestaurantTableGetDTO update(Long id, RestaurantTableGetDTO dto) {
         RestaurantTable existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Table not found with ID: " + id));
         // No additional fields to update, just save existing entity for now
         RestaurantTable updated = repository.save(existing);
-        return toDTO(updated);
+        return toResponseDTO(updated);
     }
 
     @Override

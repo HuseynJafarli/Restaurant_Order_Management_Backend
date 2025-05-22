@@ -37,7 +37,7 @@ public class RestaurantTableController {
     }
 
     @PutMapping("/{id}")
-    public RestaurantTableDTO updateTable(@PathVariable Long id, @RequestBody RestaurantTableDTO tableDTO) {
+    public RestaurantTableGetDTO updateTable(@PathVariable Long id, @RequestBody RestaurantTableGetDTO tableDTO) {
         return tableService.update(id, tableDTO);
     }
 
