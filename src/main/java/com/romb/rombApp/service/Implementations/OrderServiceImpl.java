@@ -4,6 +4,7 @@ import com.romb.rombApp.dto.*;
 import com.romb.rombApp.exception.NoContentException;
 import com.romb.rombApp.exception.ResourceNotFoundException;
 import com.romb.rombApp.model.*;
+import com.romb.rombApp.messaging.producer.OrderMessageProducer;
 import com.romb.rombApp.repository.MenuItemRepository;
 import com.romb.rombApp.repository.OrderRepository;
 import com.romb.rombApp.repository.RestaurantTableRepository;
@@ -27,6 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private MenuItemRepository menuItemRepository;
+
+    @Autowired
+    private OrderMessageProducer orderMessageProducer;
 
     @Override
     public List<Order> getAll() {
@@ -90,7 +94,13 @@ public class OrderServiceImpl implements OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         order.setTotalAmount(total);
-        return orderRepository.save(order);
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Send message to RabbitMQ
+        orderMessageProducer.sendOrderCreatedMessage(savedOrder);
+
+        return savedOrder;
     }
 
     public OrderResponseDTO convertToResponseDTO(Order order) {
@@ -102,7 +112,6 @@ public class OrderServiceImpl implements OrderService {
                 .createdAt(order.getCreatedAt())
                 .items(order.getItems().stream().map(item -> {
                     MenuItem menuItem = item.getMenuItem();
-                    BigDecimal subtotal = menuItem.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
                     return OrderItemDetailsDTO.builder()
                             .menuItemName(menuItem.getName())
                             .quantity(item.getQuantity())
